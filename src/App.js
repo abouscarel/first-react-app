@@ -1,86 +1,76 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import Membre from './components/Membre';
-import Button from './components/Button';
-import './App.css';
+import Membre from "./components/Membre";
+import "./App.css";
 
 const famille = {
   membre1: {
-    nom: 'Antonin',
+    nom: "Antonin",
     age: 24
   },
   membre2: {
-    nom: 'Baptiste',
+    nom: "Baptiste",
     age: 23
   },
   membre3: {
-    nom: 'Justine',
+    nom: "Justine",
     age: 18
   },
   membre4: {
-    nom: 'Basile',
+    nom: "Basile",
     age: 5
-  },
-}
+  }
+};
 
 class App extends Component {
-  state = { 
+  state = {
     famille,
     isShow: false
-  }
+  };
 
+  /**
+   * Handle button click 
+   * @function handleClick
+   * @param  {number} num age to add
+   */
   handleClick = num => {
     const famille = { ...this.state.famille };
     famille.membre1.age += num;
     this.setState({ famille });
-  }
+  };
 
-  handleChange = event => {
+  handleChange = (event, id) => {
     const famille = { ...this.state.famille };
     const nom = event.target.value;
-    famille.membre1.nom = nom;
-    this.setState({ famille })
-  }
+    famille[id].nom = nom;
+    this.setState({ famille });
+  };
 
-  handleShowDescription = () => {
-    const isShow = !this.state.isShow;
-    this.setState({ isShow })
-  }
+  cacherNom = id => {
+    const famille = { ...this.state.famille };
+    famille[id].nom = "X";
+    this.setState({ famille });
+  };
 
   render() {
     const { titre } = this.props;
-    const { famille, isShow } = this.state;
-    let description = null;
-    
-    if (isShow) {
-      description = <strong>Je suis un chat</strong>
-    }
+    const { famille } = this.state;
 
     const liste = Object.keys(famille).map(membre => (
       <Membre
-        nom={ famille[membre].nom }
-        age={ famille[membre].age } />
-    ))
+        key={membre}
+        handleChange={event => this.handleChange(event, membre)}
+        cacherNom={() => this.cacherNom(membre)}
+        nom={famille[membre].nom}
+        age={famille[membre].age}
+      />
+    ));
     console.log(liste);
 
     return (
       <div className="App">
-        <h1>{ titre }</h1>
-        <input 
-          type="text"
-          value={famille.membre1.nom} 
-          onChange={ this.handleChange } />
-        { liste }
-        <Membre 
-          nom={ famille.membre4.nom }
-          age={ famille.membre4.age }>
-          { description }
-          <button onClick={ this.handleShowDescription }>
-            { isShow ? 'Cacher' : 'Montrer' }
-          </button>
-        </Membre>
-        <Button
-          vieillir={ () => this.handleClick(2) } />
+        <h1>{titre}</h1>
+        {liste}
       </div>
     );
   }
